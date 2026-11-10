@@ -1,0 +1,572 @@
+{
+ "heldout_entries": [
+  {
+   "model": "Elo only",
+   "k": 0,
+   "logloss": 0.2135,
+   "brier": 0.0643,
+   "auc": 0.9706,
+   "coef": [
+    1.163
+   ],
+   "logloss_gain_vs_elo_pct": 0.0,
+   "mode": "entries"
+  },
+  {
+   "model": "Elo + problem bias",
+   "k": 0,
+   "logloss": 0.205,
+   "brier": 0.0621,
+   "auc": 0.9729,
+   "coef": [
+    1.083,
+    10.101
+   ],
+   "logloss_gain_vs_elo_pct": 4.0177,
+   "mode": "entries"
+  },
+  {
+   "model": "Elo + problem + user bias",
+   "k": 0,
+   "logloss": 0.2045,
+   "brier": 0.062,
+   "auc": 0.9731,
+   "coef": [
+    1.089,
+    9.91,
+    6.18
+   ],
+   "logloss_gain_vs_elo_pct": 4.2592,
+   "mode": "entries"
+  },
+  {
+   "model": "Elo + biases + rank-k",
+   "k": 1,
+   "logloss": 0.202,
+   "brier": 0.0613,
+   "auc": 0.9736,
+   "coef": [
+    1.07,
+    9.592,
+    5.844,
+    31.925
+   ],
+   "logloss_gain_vs_elo_pct": 5.3969,
+   "mode": "entries"
+  },
+  {
+   "model": "Elo + biases + rank-k",
+   "k": 2,
+   "logloss": 0.2009,
+   "brier": 0.061,
+   "auc": 0.9739,
+   "coef": [
+    1.059,
+    9.965,
+    5.802,
+    27.187
+   ],
+   "logloss_gain_vs_elo_pct": 5.9226,
+   "mode": "entries"
+  },
+  {
+   "model": "Elo + biases + rank-k",
+   "k": 3,
+   "logloss": 0.2001,
+   "brier": 0.0607,
+   "auc": 0.9741,
+   "coef": [
+    1.058,
+    9.265,
+    8.183,
+    22.551
+   ],
+   "logloss_gain_vs_elo_pct": 6.3153,
+   "mode": "entries"
+  },
+  {
+   "model": "Elo + biases + rank-k",
+   "k": 5,
+   "logloss": 0.1986,
+   "brier": 0.0603,
+   "auc": 0.9745,
+   "coef": [
+    1.052,
+    9.267,
+    5.763,
+    21.713
+   ],
+   "logloss_gain_vs_elo_pct": 6.9981,
+   "mode": "entries"
+  },
+  {
+   "model": "Elo + biases + rank-k",
+   "k": 10,
+   "logloss": 0.197,
+   "brier": 0.0597,
+   "auc": 0.9749,
+   "coef": [
+    1.05,
+    9.241,
+    3.604,
+    18.493
+   ],
+   "logloss_gain_vs_elo_pct": 7.7292,
+   "mode": "entries"
+  },
+  {
+   "model": "Elo + biases + rank-k",
+   "k": 20,
+   "logloss": 0.1969,
+   "brier": 0.0596,
+   "auc": 0.9749,
+   "coef": [
+    1.058,
+    9.331,
+    2.453,
+    13.912
+   ],
+   "logloss_gain_vs_elo_pct": 7.7851,
+   "mode": "entries"
+  },
+  {
+   "model": "Elo + biases + rank-k",
+   "k": 40,
+   "logloss": 0.1973,
+   "brier": 0.0597,
+   "auc": 0.9748,
+   "coef": [
+    1.062,
+    10.217,
+    1.181,
+    9.605
+   ],
+   "logloss_gain_vs_elo_pct": 7.6015,
+   "mode": "entries"
+  },
+  {
+   "model": "Elo + rank-k (raw S)",
+   "k": 1,
+   "logloss": 0.2079,
+   "brier": 0.0628,
+   "auc": 0.9721,
+   "coef": [
+    1.114,
+    35.57
+   ],
+   "logloss_gain_vs_elo_pct": 2.6683,
+   "mode": "entries"
+  },
+  {
+   "model": "Elo + rank-k (raw S)",
+   "k": 2,
+   "logloss": 0.2064,
+   "brier": 0.0624,
+   "auc": 0.9725,
+   "coef": [
+    1.101,
+    26.551
+   ],
+   "logloss_gain_vs_elo_pct": 3.3305,
+   "mode": "entries"
+  },
+  {
+   "model": "Elo + rank-k (raw S)",
+   "k": 3,
+   "logloss": 0.205,
+   "brier": 0.0621,
+   "auc": 0.9728,
+   "coef": [
+    1.089,
+    24.82
+   ],
+   "logloss_gain_vs_elo_pct": 4.0201,
+   "mode": "entries"
+  },
+  {
+   "model": "Elo + rank-k (raw S)",
+   "k": 5,
+   "logloss": 0.2029,
+   "brier": 0.0614,
+   "auc": 0.9733,
+   "coef": [
+    1.073,
+    23.044
+   ],
+   "logloss_gain_vs_elo_pct": 4.9706,
+   "mode": "entries"
+  },
+  {
+   "model": "Elo + rank-k (raw S)",
+   "k": 10,
+   "logloss": 0.2003,
+   "brier": 0.0606,
+   "auc": 0.9739,
+   "coef": [
+    1.069,
+    20.342
+   ],
+   "logloss_gain_vs_elo_pct": 6.1894,
+   "mode": "entries"
+  },
+  {
+   "model": "Elo + rank-k (raw S)",
+   "k": 20,
+   "logloss": 0.1995,
+   "brier": 0.0602,
+   "auc": 0.9742,
+   "coef": [
+    1.086,
+    16.002
+   ],
+   "logloss_gain_vs_elo_pct": 6.5964,
+   "mode": "entries"
+  },
+  {
+   "model": "Elo + rank-k (raw S)",
+   "k": 40,
+   "logloss": 0.2001,
+   "brier": 0.0603,
+   "auc": 0.974,
+   "coef": [
+    1.105,
+    12.335
+   ],
+   "logloss_gain_vs_elo_pct": 6.2785,
+   "mode": "entries"
+  }
+ ],
+ "heldout_user_contest": [
+  {
+   "model": "Elo only",
+   "k": 0,
+   "logloss": 0.2144,
+   "brier": 0.0645,
+   "auc": 0.9705,
+   "coef": [
+    1.161
+   ],
+   "logloss_gain_vs_elo_pct": 0.0,
+   "mode": "user_contest"
+  },
+  {
+   "model": "Elo + problem bias",
+   "k": 0,
+   "logloss": 0.2056,
+   "brier": 0.0623,
+   "auc": 0.9728,
+   "coef": [
+    1.08,
+    10.138
+   ],
+   "logloss_gain_vs_elo_pct": 4.0942,
+   "mode": "user_contest"
+  },
+  {
+   "model": "Elo + problem + user bias",
+   "k": 0,
+   "logloss": 0.2055,
+   "brier": 0.0622,
+   "auc": 0.9728,
+   "coef": [
+    1.08,
+    10.148,
+    0.838
+   ],
+   "logloss_gain_vs_elo_pct": 4.1334,
+   "mode": "user_contest"
+  },
+  {
+   "model": "Elo + biases + rank-k",
+   "k": 1,
+   "logloss": 0.203,
+   "brier": 0.0615,
+   "auc": 0.9734,
+   "coef": [
+    1.064,
+    9.629,
+    3.012,
+    32.543
+   ],
+   "logloss_gain_vs_elo_pct": 5.337,
+   "mode": "user_contest"
+  },
+  {
+   "model": "Elo + biases + rank-k",
+   "k": 2,
+   "logloss": 0.202,
+   "brier": 0.0612,
+   "auc": 0.9737,
+   "coef": [
+    1.061,
+    9.452,
+    6.639,
+    23.374
+   ],
+   "logloss_gain_vs_elo_pct": 5.7751,
+   "mode": "user_contest"
+  },
+  {
+   "model": "Elo + biases + rank-k",
+   "k": 3,
+   "logloss": 0.2011,
+   "brier": 0.0609,
+   "auc": 0.9739,
+   "coef": [
+    1.051,
+    9.359,
+    5.083,
+    23.196
+   ],
+   "logloss_gain_vs_elo_pct": 6.1945,
+   "mode": "user_contest"
+  },
+  {
+   "model": "Elo + biases + rank-k",
+   "k": 5,
+   "logloss": 0.1999,
+   "brier": 0.0606,
+   "auc": 0.9742,
+   "coef": [
+    1.047,
+    9.334,
+    3.478,
+    21.659
+   ],
+   "logloss_gain_vs_elo_pct": 6.7815,
+   "mode": "user_contest"
+  },
+  {
+   "model": "Elo + biases + rank-k",
+   "k": 10,
+   "logloss": 0.1987,
+   "brier": 0.0601,
+   "auc": 0.9745,
+   "coef": [
+    1.047,
+    9.308,
+    2.155,
+    17.738
+   ],
+   "logloss_gain_vs_elo_pct": 7.3298,
+   "mode": "user_contest"
+  },
+  {
+   "model": "Elo + biases + rank-k",
+   "k": 20,
+   "logloss": 0.199,
+   "brier": 0.0602,
+   "auc": 0.9744,
+   "coef": [
+    1.052,
+    9.346,
+    1.621,
+    13.934
+   ],
+   "logloss_gain_vs_elo_pct": 7.1662,
+   "mode": "user_contest"
+  },
+  {
+   "model": "Elo + biases + rank-k",
+   "k": 40,
+   "logloss": 0.1999,
+   "brier": 0.0605,
+   "auc": 0.9742,
+   "coef": [
+    1.058,
+    9.463,
+    1.37,
+    10.887
+   ],
+   "logloss_gain_vs_elo_pct": 6.7536,
+   "mode": "user_contest"
+  },
+  {
+   "model": "Elo + rank-k (raw S)",
+   "k": 1,
+   "logloss": 0.2089,
+   "brier": 0.063,
+   "auc": 0.9719,
+   "coef": [
+    1.112,
+    34.995
+   ],
+   "logloss_gain_vs_elo_pct": 2.5884,
+   "mode": "user_contest"
+  },
+  {
+   "model": "Elo + rank-k (raw S)",
+   "k": 2,
+   "logloss": 0.2074,
+   "brier": 0.0627,
+   "auc": 0.9722,
+   "coef": [
+    1.098,
+    26.409
+   ],
+   "logloss_gain_vs_elo_pct": 3.2466,
+   "mode": "user_contest"
+  },
+  {
+   "model": "Elo + rank-k (raw S)",
+   "k": 3,
+   "logloss": 0.2062,
+   "brier": 0.0623,
+   "auc": 0.9725,
+   "coef": [
+    1.087,
+    24.524
+   ],
+   "logloss_gain_vs_elo_pct": 3.8382,
+   "mode": "user_contest"
+  },
+  {
+   "model": "Elo + rank-k (raw S)",
+   "k": 5,
+   "logloss": 0.2043,
+   "brier": 0.0617,
+   "auc": 0.973,
+   "coef": [
+    1.072,
+    22.665
+   ],
+   "logloss_gain_vs_elo_pct": 4.7179,
+   "mode": "user_contest"
+  },
+  {
+   "model": "Elo + rank-k (raw S)",
+   "k": 10,
+   "logloss": 0.2022,
+   "brier": 0.061,
+   "auc": 0.9735,
+   "coef": [
+    1.07,
+    19.647
+   ],
+   "logloss_gain_vs_elo_pct": 5.712,
+   "mode": "user_contest"
+  },
+  {
+   "model": "Elo + rank-k (raw S)",
+   "k": 20,
+   "logloss": 0.2021,
+   "brier": 0.0609,
+   "auc": 0.9735,
+   "coef": [
+    1.084,
+    15.586
+   ],
+   "logloss_gain_vs_elo_pct": 5.7558,
+   "mode": "user_contest"
+  },
+  {
+   "model": "Elo + rank-k (raw S)",
+   "k": 40,
+   "logloss": 0.2034,
+   "brier": 0.0613,
+   "auc": 0.9732,
+   "coef": [
+    1.095,
+    12.847
+   ],
+   "logloss_gain_vs_elo_pct": 5.1514,
+   "mode": "user_contest"
+  }
+ ],
+ "paramnull_ratios": [
+  3.077,
+  2.524,
+  2.098,
+  1.991,
+  1.819,
+  1.701,
+  1.551,
+  1.522,
+  1.496,
+  1.427,
+  1.369,
+  1.366,
+  1.339,
+  1.282,
+  1.266,
+  1.261,
+  1.236,
+  1.227,
+  1.188,
+  1.177
+ ],
+ "bands": [
+  {
+   "lo": 1000,
+   "hi": 1400,
+   "n_users": 21085,
+   "n_problems": 3328,
+   "n_significant": 15,
+   "ratios": [
+    1.059,
+    1.119,
+    1.196,
+    1.27,
+    1.334,
+    1.395,
+    1.39,
+    1.308,
+    1.307,
+    1.307,
+    1.258,
+    1.223,
+    1.209,
+    1.198,
+    1.18
+   ]
+  },
+  {
+   "lo": 1400,
+   "hi": 1800,
+   "n_users": 8308,
+   "n_problems": 3134,
+   "n_significant": 15,
+   "ratios": [
+    1.003,
+    1.134,
+    1.213,
+    1.234,
+    1.297,
+    1.231,
+    1.224,
+    1.199,
+    1.16,
+    1.117,
+    1.108,
+    1.091,
+    1.084,
+    1.081,
+    1.071
+   ]
+  },
+  {
+   "lo": 1800,
+   "hi": 2400,
+   "n_users": 1640,
+   "n_problems": 1087,
+   "n_significant": 15,
+   "ratios": [
+    1.011,
+    1.365,
+    1.174,
+    1.107,
+    1.077,
+    1.067,
+    1.065,
+    1.056,
+    1.055,
+    1.055,
+    1.049,
+    1.044,
+    1.041,
+    1.038,
+    1.036
+   ]
+  }
+ ]
+}

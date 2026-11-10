@@ -1,0 +1,164 @@
+{
+ "method": "spectral",
+ "k": 8,
+ "silhouette_by_k": {},
+ "agreement": 0.13132967991818517,
+ "random_mean": 0.10797791987838659,
+ "random_std": 0.0013163412125354308,
+ "z": 17.739898895272294,
+ "p_value": 0.0,
+ "clusters": [
+  {
+   "cluster": 0,
+   "size": 984,
+   "best_tag": "greedy",
+   "best_jaccard": 0.22654350996596986,
+   "top_jaccard_tags": {
+    "greedy": 0.227,
+    "math": 0.211,
+    "dp": 0.2
+   },
+   "most_common_tags": {
+    "greedy": 466,
+    "math": 415,
+    "dp": 305,
+    "brute force": 283,
+    "implementation": 276
+   },
+   "mean_rating": 1723.3739837398373
+  },
+  {
+   "cluster": 1,
+   "size": 323,
+   "best_tag": "implementation",
+   "best_jaccard": 0.10313075506445672,
+   "top_jaccard_tags": {
+    "implementation": 0.103,
+    "greedy": 0.099,
+    "math": 0.096
+   },
+   "most_common_tags": {
+    "greedy": 168,
+    "math": 151,
+    "implementation": 112,
+    "constructive algorithms": 91,
+    "brute force": 64
+   },
+   "mean_rating": 958.204334365325
+  },
+  {
+   "cluster": 2,
+   "size": 200,
+   "best_tag": "greedy",
+   "best_jaccard": 0.06687116564417178,
+   "top_jaccard_tags": {
+    "greedy": 0.067,
+    "math": 0.063,
+    "sortings": 0.048
+   },
+   "most_common_tags": {
+    "greedy": 109,
+    "math": 94,
+    "constructive algorithms": 47,
+    "implementation": 46,
+    "brute force": 42
+   },
+   "mean_rating": 855.5
+  },
+  {
+   "cluster": 3,
+   "size": 526,
+   "best_tag": "dp",
+   "best_jaccard": 0.18362068965517242,
+   "top_jaccard_tags": {
+    "dp": 0.184,
+    "data structures": 0.176,
+    "trees": 0.14
+   },
+   "most_common_tags": {
+    "dp": 213,
+    "math": 187,
+    "data structures": 184,
+    "greedy": 157,
+    "constructive algorithms": 140
+   },
+   "mean_rating": 2801.9011406844106
+  },
+  {
+   "cluster": 4,
+   "size": 206,
+   "best_tag": "implementation",
+   "best_jaccard": 0.0853413654618474,
+   "top_jaccard_tags": {
+    "implementation": 0.085,
+    "greedy": 0.065,
+    "strings": 0.053
+   },
+   "most_common_tags": {
+    "greedy": 107,
+    "implementation": 85,
+    "math": 72,
+    "constructive algorithms": 49,
+    "brute force": 32
+   },
+   "mean_rating": 867.9611650485436
+  },
+  {
+   "cluster": 5,
+   "size": 690,
+   "best_tag": "greedy",
+   "best_jaccard": 0.21936542669584244,
+   "top_jaccard_tags": {
+    "greedy": 0.219,
+    "math": 0.178,
+    "constructive algorithms": 0.138
+   },
+   "most_common_tags": {
+    "greedy": 401,
+    "math": 315,
+    "constructive algorithms": 189,
+    "implementation": 176,
+    "dp": 160
+   },
+   "mean_rating": 1439.7101449275362
+  },
+  {
+   "cluster": 6,
+   "size": 245,
+   "best_tag": "dp",
+   "best_jaccard": 0.11770726714431934,
+   "top_jaccard_tags": {
+    "dp": 0.118,
+    "trees": 0.117,
+    "divide and conquer": 0.115
+   },
+   "most_common_tags": {
+    "dp": 115,
+    "math": 93,
+    "data structures": 87,
+    "brute force": 62,
+    "greedy": 60
+   },
+   "mean_rating": 2626.122448979592
+  },
+  {
+   "cluster": 7,
+   "size": 152,
+   "best_tag": "constructive algorithms",
+   "best_jaccard": 0.04805725971370143,
+   "top_jaccard_tags": {
+    "constructive algorithms": 0.048,
+    "math": 0.047,
+    "greedy": 0.044
+   },
+   "most_common_tags": {
+    "greedy": 71,
+    "math": 69,
+    "constructive algorithms": 47,
+    "implementation": 41,
+    "brute force": 24
+   },
+   "mean_rating": 933.5526315789474
+  }
+ ]
+}

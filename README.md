@@ -1,6 +1,6 @@
 # Is One Number Enough? Hidden skill dimensions in Codeforces ratings
 
-CS 328 project — Vishnu Sinha & Bhavay Goyal.
+CS 328 project — Vishnu Sinha & Bhavay Goyal. Code, data and results: https://github.com/BhavayGoyal/cf-skill-dimensions . Report: `report/report.pdf`.
 
 Codeforces compresses every contestant into one Elo-style rating. We ask: once
 rating is accounted for, is there any *consistent* structure left in who solves
@@ -26,10 +26,16 @@ could sit right on top of it.
 make setup                 # venv + editable install
 make test                  # unit tests on synthetic data (planted structure is found, noise is not)
 make quick                 # end-to-end on 25 contests (~3 min) to check everything before the big pull
-make fetch                 # ~600 rounds, ~7 s per contest => ~70 min, resumable
+make fetch                 # ~600 rounds, ~7 s per contest => ~75 min, resumable
 make all                   # matrix svd cluster lsh
 make demo H=tourist
+make extras                # residualised SVD, k=60 spectrum, silhouette clustering, robustness checks
+make plots                 # redraw all report figures -> outputs/report_figs/
+make report                # build report/report.pdf (pdflatex or tectonic)
 ```
+
+On Windows run `make` from Git Bash (the Makefile picks `.venv/Scripts` automatically), or call
+the modules directly, e.g. `python -m cfskills.svd`.
 
 Every module is also a CLI: `python -m cfskills.svd --help`, etc.
 
@@ -50,8 +56,8 @@ Every module is also a CLI: `python -m cfskills.svd --help`, etc.
   Jaccard; agreement = mean best-match Jaccard; baseline = random partitions
   with the same cluster sizes (mean, std, empirical p).
 * **D4.** Tokens `hit:j` (solved with p < 0.3 ⇔ s > 0.7) and `miss:j` (missed
-  with p > 0.7 ⇔ s < −0.7). MinHash (128 hashes), banding b × r, candidates
-  verified with exact Jaccard. Recall@10 vs. brute force on a 3,000-user sample
+  with p > 0.7 ⇔ s < −0.7). MinHash (256 hashes), banding b × r, candidates
+  verified with exact Jaccard (buckets with > 2,000 users are skipped). Recall@10 vs. brute force on a 3,000-user sample
   across band settings, plus a full-population run timed against a chunked exact
   baseline.
 * **D5.** `python -m cfskills.demo <handle>`: z-scored score on each axis next to
@@ -92,10 +98,11 @@ src/cfskills/
   demo.py      handle -> fingerprint + twins              -> D5
   robust.py    held-out prediction, split-half stability, Elo-model null,
                rating-band re-runs, tag prediction        -> outputs/R_*
+  plots.py     redraws every figure used in the report   -> outputs/report_figs
   paths.py     file locations (override with CFSKILLS_DATA / CFSKILLS_OUT)
 app.py         streamlit demo
 tests/         synthetic-data unit tests
-report/        report skeleton
+report/        report.tex (IEEE, 4 pages) -> report.pdf, and a short report.md
 ```
 
 ## Notes / gotchas

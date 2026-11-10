@@ -1,0 +1,62 @@
+{
+ "method": "kmeans",
+ "k": 2,
+ "silhouette_by_k": {
+  "2": 0.595133403077658,
+  "3": 0.5473352794200234,
+  "4": 0.5517080741741337,
+  "5": 0.5518153470455982,
+  "6": 0.5683278933468312,
+  "7": 0.5274642935814774,
+  "8": 0.532863442095728,
+  "9": 0.5245259533661023,
+  "10": 0.5252982205831752,
+  "11": 0.5193621928253678,
+  "12": 0.5220899825946417
+ },
+ "agreement": 0.2773581146189676,
+ "random_mean": 0.2621395401239715,
+ "random_std": 0.001979605632405963,
+ "z": 7.687679928861453,
+ "p_value": 0.0,
+ "clusters": [
+  {
+   "cluster": 0,
+   "size": 361,
+   "best_tag": "implementation",
+   "best_jaccard": 0.12211784799316823,
+   "top_jaccard_tags": {
+    "implementation": 0.122,
+    "strings": 0.091,
+    "greedy": 0.089
+   },
+   "most_common_tags": {
+    "greedy": 171,
+    "math": 150,
+    "implementation": 143,
+    "constructive algorithms": 82,
+    "brute force": 59
+   },
+   "mean_rating": 837.6731301939058
+  },
+  {
+   "cluster": 1,
+   "size": 3412,
+   "best_tag": "greedy",
+   "best_jaccard": 0.43259838124476696,
+   "top_jaccard_tags": {
+    "greedy": 0.433,
+    "math": 0.398,
+    "dp": 0.289
+   },
+   "most_common_tags": {
+    "greedy": 1550,
+    "math": 1419,
+    "dp": 990,
+    "constructive algorithms": 915,
+    "data structures": 821
+   },
+   "mean_rating": 1882.4150058616647
+  }
+ ]
+}

@@ -1,0 +1,50 @@
+{
+ "method": "spectral",
+ "k": 2,
+ "silhouette_by_k": {},
+ "agreement": 0.3071145456480102,
+ "random_mean": 0.2997912148868829,
+ "random_std": 0.001625920852734225,
+ "z": 4.5041126966961365,
+ "p_value": 0.01,
+ "clusters": [
+  {
+   "cluster": 0,
+   "size": 2456,
+   "best_tag": "greedy",
+   "best_jaccard": 0.34966216216216217,
+   "top_jaccard_tags": {
+    "greedy": 0.35,
+    "math": 0.347,
+    "dp": 0.281
+   },
+   "most_common_tags": {
+    "greedy": 1035,
+    "math": 993,
+    "dp": 724,
+    "implementation": 650,
+    "constructive algorithms": 630
+   },
+   "mean_rating": 1884.7312703583061
+  },
+  {
+   "cluster": 1,
+   "size": 870,
+   "best_tag": "greedy",
+   "best_jaccard": 0.26456692913385826,
+   "top_jaccard_tags": {
+    "greedy": 0.265,
+    "math": 0.216,
+    "constructive algorithms": 0.162
+   },
+   "most_common_tags": {
+    "greedy": 504,
+    "math": 403,
+    "constructive algorithms": 243,
+    "implementation": 225,
+    "brute force": 190
+   },
+   "mean_rating": 1125.057471264368
+  }
+ ]
+}

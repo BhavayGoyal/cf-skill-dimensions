@@ -167,7 +167,7 @@ def write_axes_report(sig: np.ndarray, s: np.ndarray, Vt: np.ndarray, U: np.ndar
                   "| end | loading | problem | rating | tags |", "|---|---|---|---|---|"]
         for r in df.itertuples():
             lines.append(f"| {r.end} | {r.loading:+.4f} | {r.contestId}{r.index} {r.name} | {r.rating} | {r.tags} |")
-        lines += ["", "_Plain-language reading:_ TODO", ""]
+        lines += [""]
     (out_dir / f"D2_axes{suffix}.md").write_text("\n".join(lines))
     summary = pd.DataFrame(summary_rows)
     summary.to_csv(out_dir / f"D2_axis_summary{suffix}.csv", index=False)

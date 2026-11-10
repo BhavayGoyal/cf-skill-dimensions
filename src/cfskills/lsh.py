@@ -81,7 +81,12 @@ def minhash_signatures(X: sp.csr_matrix, n_hashes: int = 128, seed: int = 0) -> 
 
 
 def candidate_pairs(sig: np.ndarray, bands: int, rows: int, max_bucket: int = 2000) -> np.ndarray:
-    """All (i, j) with i < j that share at least one band bucket. Shape (m, 2)."""
+    """All (i, j) with i < j that share at least one band bucket. Shape (m, 2).
+
+    Buckets holding more than ``max_bucket`` users are skipped (they would generate
+    millions of near-useless pairs). This is an approximation: it lowers the number of
+    candidates and can lower recall, which is why recall is always measured against
+    exact brute force."""
     assert bands * rows <= sig.shape[1], "bands*rows must be <= n_hashes"
     chunks = []
     for band in range(bands):

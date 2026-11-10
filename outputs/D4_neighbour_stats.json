@@ -1,0 +1,8 @@
+{
+ "thr": 0.7,
+ "n_sample": 3000,
+ "median_tokens": 15.0,
+ "top1_jaccard_median": 0.1190476194024086,
+ "top1_jaccard_p90": 0.17142857611179352,
+ "top10_jaccard_median": 0.0714285746216774
+}

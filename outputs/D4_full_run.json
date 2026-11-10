@@ -1,0 +1,15 @@
+{
+ "n_users": 35811,
+ "bands": 128,
+ "rows": 2,
+ "n_candidates": 8888690,
+ "candidate_fraction": 0.01386267322912229,
+ "time_lsh_s": 42.600057084,
+ "time_exact_s": 11.875608458000002,
+ "speedup": 0.2787697780447416,
+ "recall@10": 0.8391080952779874,
+ "thr": 0.7,
+ "n_hashes": 256,
+ "k": 10,
+ "n_with_twins": 35811
+}
