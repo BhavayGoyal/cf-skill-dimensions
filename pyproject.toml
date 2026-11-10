@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cfskills"
+version = "0.1.0"
+description = "Is One Number Enough? Searching for hidden skill dimensions in Codeforces ratings (CS 328 project)"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy",
+    "scipy",
+    "scikit-learn",
+    "pandas",
+    "matplotlib",
+    "requests",
+    "tqdm",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+app = ["streamlit"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
