@@ -75,6 +75,33 @@ def _reconstruct(U, s, Vt, rows, cols, k):
     return np.einsum("ik,ik->i", U[rows, :k] * s[:k], Vt[:k, cols].T)
 
 
+def _tag_matrix(problems: pd.DataFrame, min_problems: int = 100) -> tuple[sp.csr_matrix, np.ndarray]:
+    """Binary problem x tag matrix (tags with >= ``min_problems`` problems) and the tag names."""
+    sets = [set(str(t).split(";")) - {""} for t in problems["tags"]]
+    counts = pd.Series([t for s in sets for t in s]).value_counts()
+    names = np.array(sorted(counts[counts >= min_problems].index))
+    idx = {t: i for i, t in enumerate(names)}
+    if len(names) == 0:
+        return sp.csr_matrix((len(sets), 0), dtype=np.float32), names
+    r, c = zip(*[(j, idx[t]) for j, s in enumerate(sets) for t in s if t in idx])
+    return sp.csr_matrix((np.ones(len(r), np.float32), (r, c)), shape=(len(sets), len(names))), names
+
+
+def _tag_offsets(R: sp.csr_matrix, S_tr: sp.csr_matrix, T: sp.csr_matrix, lam: float = 5.0) -> np.ndarray:
+    """Shrunken per-user mean residual on each tag: sum_j R_uj T_jt / (n_ut + lam)."""
+    M = S_tr.copy(); M.data = np.ones_like(M.data)
+    return np.asarray((R @ T).todense()) / (np.asarray((M @ T).todense()) + lam)
+
+
+def _tag_feature(offs: np.ndarray, T: sp.csr_matrix, rows: np.ndarray, cols: np.ndarray, chunk: int = 200_000) -> np.ndarray:
+    """For each (user, problem): mean offset of the user over the problem's tags."""
+    Tn = np.asarray(T.todense()); Tn = Tn / np.maximum(Tn.sum(1, keepdims=True), 1)
+    out = np.empty(len(rows))
+    for a in range(0, len(rows), chunk):
+        out[a:a + chunk] = np.einsum("ij,ij->i", offs[rows[a:a + chunk]], Tn[cols[a:a + chunk]])
+    return out
+
+
 # ------------------------------------------------------------------------- heldout
 def _split_mask(C: sp.coo_matrix, problems: pd.DataFrame, frac: float, mode: str, rng) -> np.ndarray:
     """Integer split label per observed entry: 0 train, 1 calibration, 2 test."""
@@ -139,6 +166,17 @@ def heldout(S: sp.csr_matrix, problems: pd.DataFrame, ks=(1, 2, 3, 5, 10, 20, 40
     U, s, Vt = truncated_svd(R, kmax, seed=seed)
     for k in ks:
         add("Elo + biases + rank-k", k, np.c_[Fb_ca, _reconstruct(U, s, Vt, r_ca, c_ca, k)], np.c_[Fb_te, _reconstruct(U, s, Vt, r_te, c_te, k)])
+    # do the setters' tags carry the same signal? user x tag offsets (a "tag skill" model), then tags + SVD
+    T, _ = _tag_matrix(problems)
+    if T.shape[1] > 0:
+        offs = _tag_offsets(R, S_tr, T)
+        tg_ca, tg_te = _tag_feature(offs, T, r_ca, c_ca), _tag_feature(offs, T, r_te, c_te)
+        add("Elo + biases + user x tag", T.shape[1], np.c_[Fb_ca, tg_ca], np.c_[Fb_te, tg_te])
+        offs25 = _tag_offsets(R, S_tr, T, lam=25.0)  # heavier shrinkage: rules out "tag model just under-regularised"
+        add("Elo + biases + user x tag (lam=25)", T.shape[1], np.c_[Fb_ca, _tag_feature(offs25, T, r_ca, c_ca)],
+            np.c_[Fb_te, _tag_feature(offs25, T, r_te, c_te)])
+        add("Elo + biases + user x tag + rank-k", 10, np.c_[Fb_ca, tg_ca, _reconstruct(U, s, Vt, r_ca, c_ca, 10)],
+            np.c_[Fb_te, tg_te, _reconstruct(U, s, Vt, r_te, c_te, 10)])
     # the proposal's raw version: SVD of S itself with no bias terms
     U2, s2, Vt2 = truncated_svd(S_tr, kmax, seed=seed)
     for k in ks:
@@ -364,9 +402,67 @@ def _plot_tagpred(df, path):
 
 
 # ----------------------------------------------------------------------------- main
+# ---------------------------------------------------------------------- replicate
+def replicate(S, users, problems, earlier_dir: Path, k: int = 10, n_perm: int = 5, min_obs: int = 30, seed: int = 0, out=paths.OUT) -> dict:
+    """Replication on an *older, disjoint* block of rounds (no problem is shared).
+
+    (a) Does the older matrix also beat the within-column shuffle null?
+    (b) Users who appear in both eras: do their axis scores (U Sigma) agree?
+        Canonical correlations, because axes may be rotated between eras.
+    (c) Do the axes have the same *tag signature*? Tag-enrichment z-vectors of each
+        current axis are correlated with those of every older axis (best match),
+        against a null that shuffles the tag labels of the older vectors.
+    """
+    from sklearn.cross_decomposition import CCA
+
+    S2, _, users2, problems2 = load_matrix(earlier_dir)
+    log.info("replicate: earlier era has %d users x %d problems (%d contests)", *S2.shape, problems2["contestId"].nunique())
+    U1, s1, Vt1 = truncated_svd(S, 20, seed=seed)
+    U2, s2, Vt2 = truncated_svd(S2, 20, seed=seed)
+    null2 = null_spectra(S2, 20, n_perm=n_perm, seed=seed)
+    sig2 = significant_components(s2, null2)
+    res: dict = {"n_users_earlier": int(S2.shape[0]), "n_problems_earlier": int(S2.shape[1]), "n_contests_earlier": int(problems2["contestId"].nunique()),
+                 "sigma_earlier": s2.round(3).tolist(), "null_max_earlier": null2.max(0).round(3).tolist(), "n_sig_earlier": int(sig2.sum()),
+                 "ratio_earlier": (s2 / null2.max(0)).round(3).tolist()}
+
+    # (b) shared users
+    h1 = users.set_index("handle")["uid"]; h2 = users2.set_index("handle")["uid"]
+    both = h1.index.intersection(h2.index)
+    r1, r2 = h1.loc[both].to_numpy(), h2.loc[both].to_numpy()
+    n1, n2 = np.diff(S.tocsr().indptr)[r1], np.diff(S2.tocsr().indptr)[r2]
+    keep = (n1 >= min_obs) & (n2 >= min_obs)
+    r1, r2 = r1[keep], r2[keep]
+    res["n_shared_users"] = int(len(r1))
+    X1, X2 = (U1 * s1)[r1, :k], (U2 * s2)[r2, :k]
+    def canon(X, Y):
+        a, b = CCA(n_components=k, max_iter=1000).fit(X, Y).transform(X, Y)
+        return np.array([abs(np.corrcoef(a[:, i], b[:, i])[0, 1]) for i in range(k)])
+    rng = np.random.default_rng(seed)
+    res["canonical_real"] = canon(X1, X2).round(3).tolist()
+    res["canonical_null"] = canon(X1, X2[rng.permutation(len(X2))]).round(3).tolist()
+    log.info("replicate: %d shared users; canonical corr real %s null %s", len(r1), res["canonical_real"], res["canonical_null"])
+
+    # (c) tag signature of each axis
+    t1, t2 = tag_sets(problems), tag_sets(problems2)
+    common = sorted(set(t1) & set(t2))
+    def zvec(Vt, tg, i):
+        e = tag_enrichment(Vt[i], tg).set_index("tag")["z"]
+        return e.reindex(common).fillna(0.0).to_numpy()
+    Z1 = np.array([zvec(Vt1, t1, i) for i in range(k)]); Z2 = np.array([zvec(Vt2, t2, i) for i in range(k)])
+    C = np.abs(np.corrcoef(Z1, Z2)[:k, k:])
+    null_best = np.array([np.abs(np.corrcoef(Z1, Z2[:, rng.permutation(len(common))])[:k, k:]).max(1) for _ in range(200)])
+    res["tag_corr_best"] = C.max(1).round(3).tolist()
+    res["tag_corr_null_p95"] = np.quantile(null_best, 0.95, axis=0).round(3).tolist()
+    res["tag_corr_matrix"] = C.round(3).tolist()
+    res["n_common_tags"] = len(common)
+    (out / "R_replicate.json").write_text(json.dumps(res, indent=1))
+    return res
+
+
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("what", nargs="+", choices=["heldout", "splithalf", "paramnull", "band", "tagpred", "all"])
+    ap.add_argument("what", nargs="+", choices=["heldout", "splithalf", "paramnull", "band", "tagpred", "replicate", "all"])
+    ap.add_argument("--earlier", default=str(paths.DATA / "earlier" / "processed"), help="processed dir of the older-rounds replication set")
     ap.add_argument("--n-perm", type=int, default=10)
     ap.add_argument("--n-rep", type=int, default=10)
     ap.add_argument("--bands", default="1000-1400,1400-1800,1800-2400")
@@ -380,7 +476,10 @@ def main(argv: list[str] | None = None) -> None:
         what = {"heldout", "splithalf", "paramnull", "band", "tagpred"}
 
     S, M, users, problems = load_matrix()
-    summary = {}
+    summary_path = paths.OUT / "R_summary.json"
+    summary = json.loads(summary_path.read_text()) if summary_path.exists() else {}  # merge, never clobber earlier steps
+    if "replicate" in what:
+        summary["replicate"] = replicate(S, users, problems, Path(args.earlier), seed=args.seed)
     if "heldout" in what:
         for mode in ("entries", "user_contest"):
             df = heldout(S, problems, mode=mode, seed=args.seed)

@@ -17,3 +17,9 @@ outputs/svd_k60.npz
 outputs/svd_resid.npz
 outputs/D2_axis_[0-9]*.csv
 outputs/D3_clusters*.csv
+
+data/earlier/raw/contests/
+
+data/earlier/fetch.log
+outputs/earlier/
+data/earlier/raw/

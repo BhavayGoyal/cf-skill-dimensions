@@ -21,6 +21,10 @@ could sit right on top of it.
 | 4 | `make cluster` | `outputs/D3_*` | D3 |
 | 5 | `make lsh` | `outputs/D4_*`, `outputs/twins.json.gz` | D4 |
 | 6 | `make demo H=<handle>` / `make app` | fingerprint + twins | D5 |
+| 7 | `make earlier` then `make replicate` | `data/earlier/` (older 458 rounds), `outputs/R_replicate.json` | replication |
+
+**New to the project? Read [GUIDE.md](GUIDE.md)** — a from-scratch walk-through (data → surprise
+matrix → SVD → tests → tags → LSH → replication) with worked numbers.
 
 The repository ships the processed matrix (`data/processed/`) and all headline results
 (`outputs/`), so steps 3–6, `make plots` and `make report` run without re-fetching.
@@ -87,6 +91,16 @@ See `report/report.md` for the full write-up with file references.
   is already fast at n = 36k.
 * **D5** — `make demo H=tourist`: tourist's top twins are jiangly, Radewoosh, ksun48, …
 
+* **Tags vs. SVD, head-to-head** (held-out solves, `make robust`) — a per-user × tag offset
+  model gains 4.7 ± 0.1 % log-loss over Elo (offsets alone 4.35 ± 0.08 %); rank-10 SVD gains
+  7.77 ± 0.05 %; both together 7.9 %. Tags carry about a tenth of what the axes carry.
+* **Replication on older rounds** (`make earlier replicate`; 458 rounds Aug 2016–Mar 2021, no shared
+  problems, 2,253 shared users) — the older matrix beats the null on all 20 components; user
+  scores agree across eras on dimension 1 (canonical corr. 0.73), weakly on 2–3 (0.49, 0.36), not
+  beyond (≤ 0.19 vs. ≤ 0.11 shuffled). Tag signatures of the ten leading axes recur (0.53–0.81 vs.
+  ≤ 0.47 shuffled), but five current axes match the same older axis 1. The robust core is about
+  three dimensions.
+
 Robustness / extra runs: `make extras` (residualized SVD, k = 60 spectrum,
 clustering on the residualized axes).
 
@@ -101,8 +115,9 @@ src/cfskills/
   cluster.py   k-means / spectral, Jaccard vs tags        -> D3
   lsh.py       MinHash LSH, evaluation, twins             -> D4
   demo.py      handle -> fingerprint + twins              -> D5
-  robust.py    held-out prediction, split-half stability, Elo-model null,
-               rating-band re-runs, tag prediction        -> outputs/R_*
+  robust.py    held-out prediction (incl. user x tag baseline), split-half stability,
+               Elo-model null, rating-band re-runs, tag prediction,
+               replication on older rounds                -> outputs/R_*
   plots.py     redraws every figure used in the report   -> outputs/report_figs
   paths.py     file locations (override with CFSKILLS_DATA / CFSKILLS_OUT)
 app.py         streamlit demo

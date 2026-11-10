@@ -112,6 +112,9 @@ def fig_evidence() -> None:
     base = ho[ho["model"] == "Elo + problem + user bias"]["logloss_gain_vs_elo_pct"].iloc[0]
     ax.axhline(base, color=GRAY, ls="--", lw=1.2)
     ax.text(1.05, base - 0.25, "Elo + user/problem\nbias only", color=GRAY, fontsize=7, va="top")
+    tg = ho[ho["model"] == "Elo + biases + user x tag"]["logloss_gain_vs_elo_pct"].iloc[0]
+    ax.axhline(tg, color=BLUE, ls=":", lw=1.7)
+    ax.text(40, tg + 0.1, "+ user x tag offsets", color=BLUE, fontsize=7, va="bottom", ha="right")
     ax.plot(b["k"], b["logloss_gain_vs_elo_pct"], "-o", ms=3.5, color=ORANGE, lw=1.6)
     ax.set_xscale("log"); ax.set_xticks([1, 3, 10, 40]); ax.set_xticklabels(["1", "3", "10", "40"])
     ax.set_ylim(3, 8.4)
@@ -204,6 +207,41 @@ def fig_embedding() -> None:
     cb = fig.colorbar(sc, ax=ax, pad=0.02, fraction=0.06); cb.ax.set_title("rating", fontsize=7, pad=3); cb.ax.tick_params(labelsize=6)
     ax.set_xlabel("axis 1"); ax.set_ylabel("axis 2"); ax.set_title("Users, axes 1-2"); _panel(ax, "c")
     _save(fig, "fig_embedding")
+
+
+def fig_replication() -> None:
+    """Does the structure show up again in older, disjoint rounds?"""
+    r = json.loads((paths.OUT / "R_replicate.json").read_text())
+    d1 = pd.read_csv(paths.OUT / "D1_spectrum.csv")
+    k = len(r["canonical_real"])
+    fig, axes = plt.subplots(1, 3, figsize=(7.1, 2.3), gridspec_kw={"wspace": 0.45})
+
+    ax = axes[0]
+    n = len(r["sigma_earlier"]); x = np.arange(1, n + 1)
+    ax.plot(x, r["sigma_earlier"], "-o", ms=3.2, color=ORANGE, lw=1.6, label="older rounds")
+    ax.plot(x, r["null_max_earlier"], "--", color=GRAY, lw=1.3, label="shuffled columns")
+    ax.legend(loc="upper right", handlelength=1.8)
+    ax.set_xlim(0.5, n + 0.5); ax.set_ylim(0, None)
+    ax.set_xlabel("component"); ax.set_ylabel("singular value")
+    ax.set_title("Older rounds clear\nthe null too"); _panel(ax, "a")
+
+    ax = axes[1]
+    xs = np.arange(1, k + 1)
+    ax.bar(xs, r["canonical_real"], color=BLUE, width=0.68, label="same users, older vs current")
+    ax.plot(xs, r["canonical_null"], "-", color=GRAY, lw=1.4, marker="s", ms=2.5, label="users shuffled")
+    ax.legend(loc="upper right", handlelength=1.4, fontsize=6.5)
+    ax.set_ylim(0, 1.3); ax.set_yticks([0, 0.25, 0.5, 0.75, 1.0]); ax.set_xticks([1, 3, 5, 7, 10])
+    ax.set_xlabel("dimension"); ax.set_ylabel("canonical correlation")
+    ax.set_title(f"{r['n_shared_users']:,} shared users\nscore alike"); _panel(ax, "b")
+
+    ax = axes[2]
+    ax.bar(xs, r["tag_corr_best"], color=BLUE, width=0.68, label="best older axis")
+    ax.plot(xs, r["tag_corr_null_p95"], "-", color=GRAY, lw=1.4, marker="s", ms=2.5, label="shuffled-tag 95%")
+    ax.legend(loc="upper right", handlelength=1.4, fontsize=6.5)
+    ax.set_ylim(0, 1.3); ax.set_yticks([0, 0.25, 0.5, 0.75, 1.0]); ax.set_xticks([1, 3, 5, 7, 10])
+    ax.set_xlabel("current axis"); ax.set_ylabel("tag-profile correlation")
+    ax.set_title("Same tag signature\nin both eras"); _panel(ax, "c")
+    _save(fig, "fig_replication")
 
 
 # ----------------------------------------------------------------------- tags
@@ -309,12 +347,12 @@ def fig_fingerprints() -> None:
 
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("only", nargs="*", help="subset: pipeline evidence axes embedding tags twins fingerprints")
+    ap.add_argument("only", nargs="*", help="subset: pipeline evidence axes embedding replication tags twins fingerprints")
     args = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     _style()
     funcs = {"pipeline": fig_pipeline, "evidence": fig_evidence, "axes": fig_axes, "tags": fig_tags, "twins": fig_twins,
-             "fingerprints": fig_fingerprints, "embedding": fig_embedding}
+             "fingerprints": fig_fingerprints, "embedding": fig_embedding, "replication": fig_replication}
     for name in (args.only or funcs):
         funcs[name]()
 

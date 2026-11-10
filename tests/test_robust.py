@@ -60,3 +60,21 @@ def test_heldout_no_gain_when_elo_is_true_model(tmp_path):
     ranked = df[df.model == "Elo + biases + rank-k"]
     # high rank should overfit and *not* beat Elo by a meaningful margin
     assert (ranked["logloss"] > elo["logloss"] - 0.01).all()
+
+
+def test_tag_matrix_and_offsets_recover_planted_tag_skill():
+    """A user who over-performs on every 'a'-tagged problem gets a positive offset on tag 'a'."""
+    import scipy.sparse as sp
+    problems = pd.DataFrame({"tags": ["a"] * 120 + ["b"] * 120 + ["a;b"] * 20})
+    T, names = robust._tag_matrix(problems, min_problems=100)
+    assert list(names) == ["a", "b"] and T.shape == (260, 2)
+    rng = np.random.default_rng(0)
+    n_u = 30
+    S = rng.normal(0, 0.05, (n_u, 260))
+    S[0, :120] += 0.5                      # user 0 is good at 'a'
+    S[1, 120:240] += 0.5                   # user 1 is good at 'b'
+    S = sp.csr_matrix(S)
+    offs = robust._tag_offsets(S, S, T, lam=1.0)
+    assert offs[0, 0] > 0.3 > abs(offs[0, 1]) and offs[1, 1] > 0.3 > abs(offs[1, 0])
+    f = robust._tag_feature(offs, T, np.array([0, 1]), np.array([0, 130]))
+    assert f[0] > 0.3 and f[1] > 0.3

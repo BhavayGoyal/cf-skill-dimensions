@@ -62,8 +62,12 @@ def select_contests(
     include: str = DEFAULT_INCLUDE,
     exclude: str = DEFAULT_EXCLUDE,
     now: float | None = None,
+    offset: int = 0,
 ) -> list[dict]:
-    """Most recent ``n`` finished individual rounds at least ``min_age_days`` old."""
+    """Most recent ``n`` finished individual rounds at least ``min_age_days`` old.
+
+    ``offset`` skips that many of the newest qualifying rounds first, so
+    ``offset=600`` selects the *next older* block (used for the replication set)."""
     now = time.time() if now is None else now
     inc = re.compile(include, re.I)
     exc = re.compile(exclude, re.I)
@@ -79,7 +83,7 @@ def select_contests(
             continue
         out.append(c)
     out.sort(key=lambda c: c["startTimeSeconds"], reverse=True)
-    return out[:n]
+    return out[offset:offset + n]
 
 
 def slim_standings(standings: dict) -> dict:
@@ -135,6 +139,7 @@ def fetch_contest(client: CFClient, contest: dict, out_path: Path) -> str:
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--max-contests", type=int, default=600)
+    ap.add_argument("--offset", type=int, default=0, help="skip the newest N qualifying rounds (older replication block)")
     ap.add_argument("--min-age-days", type=float, default=90, help="skip rounds younger than this (ratings unsettled)")
     ap.add_argument("--include", default=DEFAULT_INCLUDE)
     ap.add_argument("--exclude", default=DEFAULT_EXCLUDE)
@@ -154,7 +159,7 @@ def main(argv: list[str] | None = None) -> None:
     log.info("fetching contest.list ...")
     contests = client.contest_list()
     dump_gz(contests, paths.CONTEST_LIST_JSON)
-    selected = select_contests(contests, args.max_contests, args.min_age_days, args.include, args.exclude)
+    selected = select_contests(contests, args.max_contests, args.min_age_days, args.include, args.exclude, offset=args.offset)
     log.info("selected %d contests (%s .. %s)", len(selected), selected[-1]["name"] if selected else "-", selected[0]["name"] if selected else "-")
 
     manifest = json.loads(paths.MANIFEST.read_text()) if paths.MANIFEST.exists() else {}

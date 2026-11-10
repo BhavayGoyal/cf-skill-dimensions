@@ -9,7 +9,7 @@ endif
 PY ?= $(BIN)/python
 PIP ?= $(BIN)/pip
 
-.PHONY: help setup fetch matrix svd cluster lsh demo all quick test app clean robust extras plots report
+.PHONY: help setup fetch matrix svd cluster lsh demo all quick test app clean robust extras plots report earlier replicate
 
 help:
 	@echo "make setup    create .venv and install the package (editable)"
@@ -22,6 +22,8 @@ help:
 	@echo "make all      matrix svd cluster lsh (assumes fetch is done)"
 	@echo "make robust   held-out prediction, split-half, Elo-model null, rating bands, tag prediction"
 	@echo "make extras   robustness runs used in the report (svd-resid, svd-k60, cluster-resid, cluster-k2, robust)"
+	@echo "make earlier  fetch + build an older, disjoint block of 500 rounds for replication (~60 min)"
+	@echo "make replicate  test whether the structure replicates on those older rounds"
 	@echo "make plots    redraw every figure used in the report from outputs/"
 	@echo "make report   build report/report.pdf (needs pdflatex or tectonic)"
 	@echo "make quick    end-to-end smoke test on 25 contests (~3 min of API time)"
@@ -63,6 +65,14 @@ cluster-resid:
 
 robust:
 	$(PY) -m cfskills.robust all $(ARGS)
+
+# replication set: the 500 rounds just older than the main 600 (separate data/earlier tree)
+earlier:
+	CFSKILLS_DATA=data/earlier CFSKILLS_OUT=outputs/earlier $(PY) -m cfskills.fetch --max-contests 500 --offset 600
+	CFSKILLS_DATA=data/earlier CFSKILLS_OUT=outputs/earlier $(PY) -m cfskills.matrix
+
+replicate:
+	$(PY) -m cfskills.robust replicate $(ARGS)
 
 all: matrix svd cluster lsh
 extras: svd-resid svd-k60 cluster-resid cluster-k2 robust
