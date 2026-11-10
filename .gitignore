@@ -10,3 +10,10 @@ report/*.aux
 report/*.log
 report/*.out
 logs/
+
+# regenerable bulk (make fetch / make svd / make cluster)
+data/raw/contests/
+outputs/svd_k60.npz
+outputs/svd_resid.npz
+outputs/D2_axis_[0-9]*.csv
+outputs/D3_clusters*.csv

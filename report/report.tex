@@ -25,6 +25,8 @@
 Codeforces summarises every contestant with one Elo-style rating. We ask whether that is enough. Using 589 rated rounds (36,519 users, 3,773 problems) we subtract the Elo expectation from every solve and study what is left. The leftover is not noise: it beats two null models, improves prediction of hidden solves, and about six user dimensions reproduce on disjoint halves of the data. The biggest dimension is a difficulty slope (who over-performs on hard problems); the clearest topical one is ad-hoc (math, constructive) versus algorithmic (data structures, graphs, DP). The official tags, however, hardly match the structure users reveal. Finally, MinHash LSH finds ``skill twins'' while examining 1.4\,\% of all pairs, but is slower than brute force at this size.
 \end{abstract}
 
+\noindent\textbf{Code, data and results:} \url{\repourl}\par
+
 \section{Problem Description}
 Two users, both rated 1600: one breezes through number theory and freezes on dynamic programming, the other is the opposite. To Codeforces they are the same person. A single rating assumes skill is one-dimensional. We test that assumption, with a test that \emph{can} say ``yes, one number is enough'':
 \begin{itemize}
@@ -51,7 +53,7 @@ To our knowledge these tools have not been combined to ask whether Codeforces ra
 \subsection{Our Approach}
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=0.8\textwidth]{fig_pipeline.png}
+\includegraphics[width=0.7\textwidth]{fig_pipeline.png}
 \caption{The pipeline. Blue boxes decide \emph{whether} there is structure; orange boxes describe it. D1--D5 are the project deliverables.}
 \label{fig:pipeline}
 \end{figure*}
@@ -69,16 +71,22 @@ To our knowledge these tools have not been combined to ask whether Codeforces ra
 \subsection{One number is not enough}
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=0.88\textwidth]{fig_evidence.png}
-\caption{Three tests that could each have said ``no''. \textbf{a} The real singular values (red) lie above both nulls; the gap is widest at components 4--9 (up to $1.5\times$). \textbf{b} Hidden-outcome prediction: a rank-10 model improves log-loss by $7.7\,\%$ over Elo ($0.2135\to0.1970$), $3.6\,\%$ beyond Elo plus offsets. It peaks at $k{=}10$--$20$ and then overfits. \textbf{c} Odd-round and even-round user scores correlate $0.90$ to $0.60$ for six dimensions; shuffled users give $\le0.03$.}
+\includegraphics[width=0.72\textwidth]{fig_evidence.png}
+\caption{Three tests that could each have said ``no''. \textbf{a} The real singular values (orange) lie above both nulls; the gap is widest at components 4--9 (up to $1.5\times$). \textbf{b} Hidden-outcome prediction: a rank-10 model improves log-loss by $7.7\,\%$ over Elo ($0.2135\to0.1970$), $3.6\,\%$ beyond Elo plus offsets. It peaks at $k{=}10$--$20$ and then overfits. \textbf{c} Odd-round and even-round user scores correlate $0.90$ to $0.60$ for six dimensions; shuffled users give $\le0.03$.}
 \label{fig:evidence}
 \end{figure*}
-All three tests agree (Fig.~\ref{fig:evidence}). The structure survives subtracting every user's per-round average, so it is not just ``good day / bad day''. A caution: with 15.8\,M entries even tiny effects are significant, so all 60 tested components clear the null without being 60 skills. We read the effect sizes, which put the useful content in roughly the first ten dimensions.
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.7\textwidth]{fig_embedding.png}
+\caption{The SVD itself. \textbf{a} Scree plot: share of the top-20 variance per component against the shuffled-column null (dashed); the real spectrum sits above it. \textbf{b} Problems projected on the first two axes ($V\Sigma$), coloured by rating: easy problems (dark) fan out along two arms, since a surprise on an easy problem is large. \textbf{c} Users on the same axes ($U\Sigma$, 8,000 random users): lower-rated users spread furthest along axis~1, the difficulty slope.}
+\label{fig:embedding}
+\end{figure*}
+All three tests agree (Fig.~\ref{fig:evidence}); Fig.~\ref{fig:embedding} shows the underlying SVD. The structure survives subtracting every user's per-round average, so it is not just ``good day / bad day''. A caution: with 15.8\,M entries even tiny effects are significant, so all 60 tested components clear the null without being 60 skills. We read the effect sizes, which put the useful content in roughly the first ten dimensions.
 
 \subsection{What the hidden dimensions are}
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=0.86\textwidth]{fig_axes.png}
+\includegraphics[width=0.7\textwidth]{fig_axes.png}
 \caption{\textbf{a, b} Tags enriched at each end of two axes (z-score of mean loading; signs are arbitrary). \textbf{c} Correlation of each axis with problem difficulty: only axis 1 is mostly difficulty.}
 \label{fig:axes}
 \end{figure*}
@@ -92,7 +100,7 @@ Being good at a tag beyond one's rating is a stable trait mainly for algorithmic
 \subsection{Tags only weakly match}
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=0.84\textwidth]{fig_tags.png}
+\includegraphics[width=0.66\textwidth]{fig_tags.png}
 \caption{\textbf{a} Clusters of problems built from user behaviour agree with tags only $0.3$--$2.3$ Jaccard points more than random clusters (bars show random $\pm2$ s.d.). \textbf{b} Predicting a tag from difficulty alone (hollow) or difficulty plus the 20 axes (filled): axes help mainly for ad-hoc tags.}
 \label{fig:tags}
 \end{figure*}
@@ -101,7 +109,7 @@ The clusters follow difficulty and division, not topic: with $k{=}8$ one cluster
 \subsection{Skill twins and LSH}
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=0.78\textwidth]{fig_twins.png}
+\includegraphics[width=0.62\textwidth]{fig_twins.png}
 \caption{\textbf{a} Recall of the true 10 nearest neighbours against the LSH threshold. Real neighbours are far apart (shaded: Jaccard $0.07$--$0.12$), so only a low threshold finds them. \textbf{b} Full population: LSH examines $1.4\,\%$ of the 641\,M pairs at recall $0.84$, yet takes longer than a sparse matrix product.}
 \label{fig:twins}
 \end{figure*}
@@ -109,7 +117,7 @@ Nearest neighbours are far apart: the median top-1 Jaccard is only $0.12$. The $
 
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=0.78\textwidth]{fig_fingerprints.png}
+\includegraphics[width=0.62\textwidth]{fig_fingerprints.png}
 \caption{Skill fingerprints (score on each axis relative to all users). \textbf{a} The two top-rated users are almost identical and each other's closest twin ($J{=}0.216$). \textbf{b} Three users around rating 1600 look very different, which is the point of the project.}
 \label{fig:fp}
 \end{figure*}
@@ -127,13 +135,14 @@ The demo (\texttt{python -m cfskills.demo handle}, or the Streamlit app) returns
 \end{itemize}
 
 \section*{Code and Data}
-All code, the cached Codeforces data, the processed matrix and every result file are in one repository: \url{\repourl} (package \texttt{cfskills}, 21 unit tests, a Makefile that rebuilds every figure and this report; raw data in \texttt{data/raw}, results in \texttt{outputs}).
+All code, the processed surprise matrix and every result file are in one repository: \url{\repourl} (package \texttt{cfskills}, 21 unit tests, a Makefile that rebuilds every figure and this report; processed data in \texttt{data/processed}, results in \texttt{outputs}). The raw API cache (118\,MB) is not stored; \texttt{make fetch} rebuilds it in about 75 minutes.
 
 \section*{Contributions}
 \emph{Vishnu Sinha}: API pull, surprise matrix, SVD and null tests, D1--D2. \emph{Bhavay Goyal}: MinHash LSH, evaluation, demo, D4--D5. Shared: clustering, tag comparison, robustness checks, report.
 
 \begin{thebibliography}{9}
-\footnotesize
+\scriptsize
+\setlength{\itemsep}{0pt}
 \bibitem{elo} A. E. Elo, \emph{The Rating of Chessplayers, Past and Present}. Arco, 1978.
 \bibitem{glicko} M. E. Glickman, ``Parameter estimation in large dynamic paired comparison experiments,'' \emph{J. Royal Statistical Society C}, 48(3):377--394, 1999.
 \bibitem{trueskill} R. Herbrich, T. Minka, T. Graepel, ``TrueSkill: A Bayesian skill rating system,'' in \emph{NIPS 19}, 2007.

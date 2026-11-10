@@ -174,6 +174,38 @@ def fig_axes() -> None:
     _save(fig, "fig_axes")
 
 
+def fig_embedding() -> None:
+    """Scree plot plus 2-D maps of problems and users on the leading SVD axes."""
+    z = np.load(paths.OUT / "svd.npz")
+    U, sig, Vt, nul = z["U"], z["s"], z["Vt"], z["null_s"]
+    problems = pd.read_csv(paths.PROCESSED / "problems.csv", keep_default_na=False)
+    users = pd.read_csv(paths.PROCESSED / "users.csv")
+    P = Vt.T * sig                      # problem coordinates (V Sigma)
+    Q = U * sig                         # user coordinates (U Sigma)
+    fig, axes = plt.subplots(1, 3, figsize=(7.1, 2.4), gridspec_kw={"wspace": 0.62})
+
+    ax = axes[0]
+    k = np.arange(1, len(sig) + 1)
+    tot = (sig ** 2).sum()
+    ax.bar(k, sig ** 2 / tot * 100, color=ORANGE, width=0.7, label="real")
+    ax.plot(k, nul.max(axis=0) ** 2 / tot * 100, "--", color=GRAY, lw=1.3, label="shuffled null")
+    ax.set_xlabel("component"); ax.set_ylabel("share of top-20 variance (%)")
+    ax.legend(loc="upper right", handlelength=1.5, fontsize=7); ax.set_title("Scree plot"); _panel(ax, "a")
+
+    ax = axes[1]
+    sc = ax.scatter(P[:, 0], P[:, 1], c=problems["rating"], cmap="viridis", s=2.5, lw=0, alpha=0.8, rasterized=True)
+    cb = fig.colorbar(sc, ax=ax, pad=0.02, fraction=0.06); cb.ax.set_title("rating", fontsize=7, pad=3); cb.ax.tick_params(labelsize=6)
+    ax.set_xlabel("axis 1"); ax.set_ylabel("axis 2"); ax.set_title("Problems, axes 1-2"); _panel(ax, "b")
+
+    ax = axes[2]
+    r = users["last_rating"].to_numpy(float)
+    idx = np.random.default_rng(0).choice(len(r), 8000, replace=False)
+    sc = ax.scatter(Q[idx, 0], Q[idx, 1], c=r[idx], cmap="viridis", s=2.5, lw=0, alpha=0.7, rasterized=True)
+    cb = fig.colorbar(sc, ax=ax, pad=0.02, fraction=0.06); cb.ax.set_title("rating", fontsize=7, pad=3); cb.ax.tick_params(labelsize=6)
+    ax.set_xlabel("axis 1"); ax.set_ylabel("axis 2"); ax.set_title("Users, axes 1-2"); _panel(ax, "c")
+    _save(fig, "fig_embedding")
+
+
 # ----------------------------------------------------------------------- tags
 def fig_tags() -> None:
     runs = [("k-means\nk=8", "D3_agreement.json"), ("spectral\nk=8", "D3_agreement_spectral.json"), ("k-means\nk=2", "D3_agreement_obs1000.json")]
@@ -277,12 +309,12 @@ def fig_fingerprints() -> None:
 
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("only", nargs="*", help="subset: pipeline evidence axes tags twins fingerprints")
+    ap.add_argument("only", nargs="*", help="subset: pipeline evidence axes embedding tags twins fingerprints")
     args = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     _style()
     funcs = {"pipeline": fig_pipeline, "evidence": fig_evidence, "axes": fig_axes, "tags": fig_tags, "twins": fig_twins,
-             "fingerprints": fig_fingerprints}
+             "fingerprints": fig_fingerprints, "embedding": fig_embedding}
     for name in (args.only or funcs):
         funcs[name]()
 
